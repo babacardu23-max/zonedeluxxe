@@ -35,7 +35,7 @@
       ]
     },
     {
-      "source": "/(img|js)/(.*)",
+      "source": "/(img|js|css)/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
