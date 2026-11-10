@@ -17,6 +17,7 @@
 <body>
 
 <div id="intro" aria-hidden="true"><div class="pan h"></div><div class="pan b"></div><div class="marque"><img src="img/logo.jpg" alt=""></div><div class="compte" id="compte">0</div></div>
+<div class="barre-progres" id="barre-progres" aria-hidden="true"></div>
 <div class="curseur" id="curseur" aria-hidden="true"><span>Voir</span></div>
 
 <header class="top" id="haut">
@@ -28,24 +29,24 @@
       <a href="#univers">Parfums et accessoires</a>
       <a href="#commander">Commander</a>
     </nav>
-    <a class="btn-wa" data-wa="Bonjour Zonedeluxxe, j'aimerais passer une commande." href="#"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-wa"/></svg><span>77 485 60 93</span></a>
+    <a class="btn-wa" data-wa="Bonjour Zonedeluxxe, j'aimerais passer une commande." href="#"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-wa"/></svg><span data-tel>77 485 60 93</span></a>
   </div>
 </header>
 
 <main id="accueil">
   <section class="hero">
     <div>
-      <h1><span class="l"><span>Ta tenue</span></span><span class="l"><span>du jour,</span></span><span class="l l2"><span>livrée aujourd'hui.</span></span></h1>
+      <h1><span class="l"><span data-txt="hero_1" data-txt-label="Titre d'accueil, ligne 1">Ta tenue</span></span><span class="l"><span data-txt="hero_2" data-txt-label="Titre d'accueil, ligne 2">du jour,</span></span><span class="l l2"><span data-txt="hero_3" data-txt-label="Titre d'accueil, ligne 3 (en couleur)">livrée aujourd'hui.</span></span></h1>
       <div class="sous-hero">
-        <p class="intro" id="accroche">Robes, ensembles, kimonos, jupes et tops dès 2 000 F, plus une sélection de parfums arabes, d'abayas et de lunettes. Tu choisis, tu écris sur WhatsApp, on livre tout de suite.</p>
+        <p class="intro" id="accroche" data-txt="accroche" data-txt-label="Phrase sous le titre">Robes, ensembles, kimonos, jupes et tops dès 4 000 F, plus une sélection de parfums arabes, d'abayas et de lunettes. Tu choisis, tu écris sur WhatsApp, on livre tout de suite.</p>
         <div class="actions">
           <a class="btn-wa" data-wa="Bonjour Zonedeluxxe, j'aimerais voir les nouveautés." href="#"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-wa"/></svg>Commander sur WhatsApp</a>
           <a class="lien-sec" href="#catalogue">Voir le catalogue</a>
         </div>
         <div class="faits">
-          <div><strong>34,9 k</strong>abonnés sur Instagram</div>
-          <div><strong id="nb-pieces">23</strong>pièces en ligne</div>
-          <div><strong>Livraison immédiate</strong>dès ta commande</div>
+          <div><strong data-txt="fait1_n" data-txt-label="Chiffre 1">34,9 k</strong><span data-txt="fait1_t" data-txt-label="Chiffre 1, légende">abonnés sur Instagram</span></div>
+          <div><strong id="nb-pieces">23</strong><span data-txt="fait2_t" data-txt-label="Nombre de pièces, légende">pièces en ligne</span></div>
+          <div><strong data-txt="fait3_n" data-txt-label="Chiffre 3">Livraison immédiate</strong><span data-txt="fait3_t" data-txt-label="Chiffre 3, légende">dès ta commande</span></div>
         </div>
       </div>
     </div>
@@ -62,8 +63,8 @@
   <section id="defile" aria-label="Le défilé">
     <div class="entete">
       <div>
-        <h2 class="titre" data-split>Le défilé</h2>
-        <p class="sous">Les pièces phares de la semaine, une à une. Touche une tenue pour la voir en grand.</p>
+        <h2 class="titre" data-split data-txt="defile_t" data-txt-label="Le défilé : titre">Le défilé</h2>
+        <p class="sous" data-txt="defile_p" data-txt-label="Le défilé : texte">Les pièces phares de la semaine, une à une. Touche une tenue pour la voir en grand.</p>
       </div>
       <div class="compteur" aria-hidden="true"><b id="cpt-num">01</b> / <span id="cpt-tot">08</span></div>
     </div>
@@ -72,36 +73,41 @@
   </section>
 
   <section class="bloc" id="catalogue">
-    <h2 class="titre" data-split>Le catalogue</h2>
-    <p class="sous apparait">Touche une pièce pour la voir en grand. Le bouton Commander ouvre WhatsApp avec ton message déjà écrit.</p>
+    <h2 class="titre" data-split data-txt="cat_t" data-txt-label="Catalogue : titre">Le catalogue</h2>
+    <p class="sous apparait" data-txt="cat_p" data-txt-label="Catalogue : texte">Touche une pièce pour la voir en grand. Le bouton Commander ouvre WhatsApp avec ton message déjà écrit.</p>
     <div class="filtres" role="group" aria-label="Filtrer par catégorie" id="filtres"></div>
     <div class="grille" id="grille" aria-live="polite"></div>
   </section>
 
+  <section class="lookbook" aria-label="Lookbook" id="lookbook">
+    <div class="lb-rang" id="lb-1"></div>
+    <div class="lb-rang inverse" id="lb-2"></div>
+  </section>
+
   <section class="univers" id="univers">
     <div class="bloc">
-      <h2 class="titre" data-split>Parfums et accessoires</h2>
-      <p class="sous apparait">La sélection change à chaque arrivage. Demande les modèles et les prix du moment sur WhatsApp.</p>
+      <h2 class="titre" data-split data-txt="univ_t" data-txt-label="Parfums et accessoires : titre">Parfums et accessoires</h2>
+      <p class="sous apparait" data-txt="univ_p" data-txt-label="Parfums et accessoires : texte">La sélection change à chaque arrivage. Demande les modèles et les prix du moment sur WhatsApp.</p>
       <div class="univers-liste" id="univers-liste"></div>
     </div>
   </section>
 
   <section class="bloc" id="commander">
-    <h2 class="titre" data-split>Commander en trois messages</h2>
+    <h2 class="titre" data-split data-txt="cmd_t" data-txt-label="Commander : titre">Commander en trois messages</h2>
     <ol class="etapes apparait">
-      <li><b>Choisis ta pièce</b><p>Dans le catalogue ou sur Instagram. Note le nom du modèle et ta couleur.</p></li>
-      <li><b>Écris-nous sur WhatsApp</b><p>Au 77 485 60 93, avec ta taille et ton adresse de livraison.</p></li>
-      <li><b>Reçois-la aujourd'hui</b><p>Le livreur t'apporte ta commande dans la journée.</p></li>
+      <li><b data-txt="e1_t" data-txt-label="Étape 1 : titre">Choisis ta pièce</b><p data-txt="e1_p" data-txt-label="Étape 1 : texte">Dans le catalogue ou sur Instagram. Note le nom du modèle et ta couleur.</p></li>
+      <li><b data-txt="e2_t" data-txt-label="Étape 2 : titre">Écris-nous sur WhatsApp</b><p data-txt="e2_p" data-txt-label="Étape 2 : texte">Au 77 485 60 93, avec ta taille et ton adresse de livraison.</p></li>
+      <li><b data-txt="e3_t" data-txt-label="Étape 3 : titre">Reçois-la aujourd'hui</b><p data-txt="e3_p" data-txt-label="Étape 3 : texte">Le livreur t'apporte ta commande dans la journée.</p></li>
     </ol>
   </section>
 </main>
 
 <footer>
-  <div class="geant" aria-hidden="true">Zonedeluxxe</div>
+  <div class="geant" aria-hidden="true" data-txt="geant" data-txt-label="Grand mot du pied de page">Zonedeluxxe</div>
   <div class="pied">
     <span class="logo" data-logo aria-hidden="true"></span>
-    <div><strong>Mode femme, parfums et accessoires</strong>Robes, ensembles, kimonos, abayas, parfums arabes, coffrets et lunettes.</div>
-    <div><strong>Nous écrire</strong>WhatsApp : <a data-wa="Bonjour Zonedeluxxe !" href="#">77 485 60 93</a><br>Instagram : <a href="https://www.instagram.com/zone_de_luxxe_/" target="_blank" rel="noopener">@zone_de_luxxe_</a></div>
+    <div><strong data-txt="pied_t" data-txt-label="Pied de page : titre">Mode femme, parfums et accessoires</strong><span data-txt="pied_p" data-txt-label="Pied de page : texte">Robes, ensembles, kimonos, abayas, parfums arabes, coffrets et lunettes.</span></div>
+    <div><strong>Nous écrire</strong>WhatsApp : <a data-wa="Bonjour Zonedeluxxe !" href="#" data-tel>77 485 60 93</a><br>Instagram : <a href="https://www.instagram.com/zone_de_luxxe_/" target="_blank" rel="noopener">@zone_de_luxxe_</a></div>
   </div>
   <div class="bas-pied"><span>Site conçu par Babacarvalide · <a href="https://babacarvalide.pro">babacarvalide.pro</a> <button class="coeur" type="button" id="coeur" aria-label="Accès gérant">♥</button></span><span>© Zonedeluxxe</span></div>
 </footer>
@@ -125,14 +131,51 @@
 <div id="gerant" role="region" aria-label="Espace gérant">
   <aside class="g-side">
     <span class="logo" data-logo aria-hidden="true"></span>
-    <button type="button" data-vue="produits" aria-current="true">Produits et prix</button>
-    <button type="button" data-vue="apparence" aria-current="false">Logo, couleurs et accueil</button>
+    <button type="button" data-vue="bord" aria-current="true">Tableau de bord</button>
+    <button type="button" data-vue="commandes" aria-current="false">Commandes et ventes</button>
+    <button type="button" data-vue="produits" aria-current="false">Produits et prix</button>
+    <button type="button" data-vue="textes" aria-current="false">Textes du site</button>
+    <button type="button" data-vue="apparence" aria-current="false">Logo, couleurs et contact</button>
     <a class="bas" href="#accueil" id="g-quitter">Voir la boutique</a>
     <button type="button" id="g-deco">Se déconnecter</button>
   </aside>
   <div class="g-main">
     <div class="g-alerte" id="g-alerte" hidden>Ta session a expiré. Reconnecte-toi avec le cœur en bas du site pour enregistrer.</div>
-    <div id="vue-produits">
+    <div id="vue-bord" data-vue-panneau="bord">
+      <div class="g-tete">
+        <div><h1>Tableau de bord</h1><p class="g-sous">Ce qui se passe sur le site. Les ventes viennent du registre « Commandes et ventes ».</p></div>
+        <div class="periode" role="group" aria-label="Période"><button class="b" type="button" data-jours="7">7 jours</button><button class="b" type="button" data-jours="30" aria-pressed="true">30 jours</button><button class="b" type="button" data-jours="90">90 jours</button></div>
+      </div>
+      <div class="kpis kpis-6" id="bord-kpis"></div>
+      <div class="bord-grille">
+        <div class="panneau carte-graph"><div class="p-tete"><h2>Visites et demandes WhatsApp</h2><span class="legende"><i class="l-vis"></i>Visites <i class="l-dem"></i>Demandes</span></div><div id="graph-trafic" class="graph"></div></div>
+        <div class="panneau carte-graph"><div class="p-tete"><h2>Chiffre d'affaires par jour</h2></div><div id="graph-ca" class="graph"></div></div>
+        <div class="panneau"><div class="p-tete"><h2>Pièces les plus demandées</h2></div><div id="bord-top"></div></div>
+        <div class="panneau"><div class="p-tete"><h2>Dernières demandes WhatsApp</h2><small>Clics sur « Commander ». Confirme celles qui se sont transformées en vente.</small></div><div id="bord-demandes"></div></div>
+      </div>
+    </div>
+    <div id="vue-commandes" data-vue-panneau="commandes" hidden>
+      <div class="g-tete">
+        <div><h1>Commandes et ventes</h1><p class="g-sous">Enregistre chaque vente conclue sur WhatsApp pour suivre ton chiffre d'affaires.</p></div>
+        <div class="actions-ligne"><button class="b" type="button" id="cmd-export">Exporter (CSV)</button><button class="b principal" type="button" id="cmd-nouvelle">Nouvelle vente</button></div>
+      </div>
+      <div class="kpis" id="cmd-kpis"></div>
+      <div class="panneau">
+        <div class="outils">
+          <label class="sr" for="cmd-cherche">Chercher une commande</label><input id="cmd-cherche" type="search" placeholder="Chercher un client, un article">
+          <label class="sr" for="cmd-statut">Statut</label><select id="cmd-statut"><option value="">Tous les statuts</option><option value="nouvelle">À traiter</option><option value="confirmee">Confirmée</option><option value="livree">Livrée</option><option value="annulee">Annulée</option></select>
+        </div>
+        <div id="cmd-table"></div>
+      </div>
+    </div>
+    <div id="vue-textes" data-vue-panneau="textes" hidden>
+      <div class="g-tete">
+        <div><h1>Textes du site</h1><p class="g-sous">Modifie n'importe quel texte de la boutique. Laisse un champ vide pour revenir au texte d'origine.</p></div>
+        <div class="actions-ligne"><button class="b" type="button" id="txt-retablir">Tout rétablir</button><button class="b principal" type="button" id="txt-ok">Enregistrer les textes</button></div>
+      </div>
+      <div class="panneau"><form id="txt-form" class="txt-form"></form></div>
+    </div>
+    <div id="vue-produits" data-vue-panneau="produits" hidden>
       <div class="g-tete">
         <div><h1>Produits et prix</h1><p class="g-sous">Change un prix directement dans la liste, il est enregistré dès que tu quittes la case.</p></div>
         <button class="b principal" type="button" id="nouveau">Ajouter un produit</button>
@@ -153,8 +196,8 @@
         <div id="g-table"></div>
       </div>
     </div>
-    <div id="vue-apparence" hidden>
-      <div class="g-tete"><div><h1>Logo, couleurs et accueil</h1><p class="g-sous">L'identité de la boutique, appliquée à tout le site.</p></div></div>
+    <div id="vue-apparence" data-vue-panneau="apparence" hidden>
+      <div class="g-tete"><div><h1>Logo, couleurs et contact</h1><p class="g-sous">L'identité de la boutique et son numéro WhatsApp.</p></div></div>
       <div class="cartes-app">
         <div class="carte-app">
           <h2>Logo</h2>
@@ -172,9 +215,10 @@
           </div>
         </div>
         <div class="carte-app">
-          <h2>Texte d'accueil</h2>
-          <div class="champ"><label for="f-accroche">Phrase sous le titre</label><textarea id="f-accroche" rows="4"></textarea></div>
-          <button class="b" type="button" id="accroche-ok">Enregistrer le texte</button>
+          <h2>Numéro WhatsApp</h2>
+          <p>Toutes les commandes du site arrivent sur ce numéro.</p>
+          <div class="champ"><label for="f-wa">Numéro avec indicatif</label><input id="f-wa" inputmode="tel" placeholder="221774856093"><small>Chiffres uniquement, avec 221 devant.</small></div>
+          <button class="b" type="button" id="wa-ok">Enregistrer le numéro</button>
         </div>
       </div>
     </div>
@@ -203,6 +247,25 @@
     <label class="coche"><input type="checkbox" id="p-visible" checked> Visible sur la boutique</label>
   </form>
   <footer><button class="b" type="button" data-fermer-tiroir>Annuler</button><button class="b principal" type="submit" form="form-produit" id="p-ok">Enregistrer</button></footer>
+</div>
+
+<div class="tiroir" id="tiroir-cmd" role="dialog" aria-modal="true" aria-labelledby="c-titre">
+  <header><h2 id="c-titre">Nouvelle vente</h2><button class="b" type="button" data-fermer-cmd>Fermer</button></header>
+  <form id="form-cmd" novalidate>
+    <div class="champ"><label for="c-produit">Pièce vendue</label><select id="c-produit"></select><small>Remplit l'article et le prix automatiquement.</small></div>
+    <div class="champ"><label for="c-articles">Articles</label><input id="c-articles" maxlength="500" placeholder="Robe Mary taille M, couleur rouge"></div>
+    <div class="deux">
+      <div class="champ"><label for="c-montant">Montant total (F CFA)</label><input id="c-montant" type="number" inputmode="numeric" min="0" step="500" required></div>
+      <div class="champ"><label for="c-statut">Statut</label><select id="c-statut"><option value="nouvelle">À traiter</option><option value="confirmee" selected>Confirmée</option><option value="livree">Livrée</option><option value="annulee">Annulée</option></select></div>
+    </div>
+    <div class="deux">
+      <div class="champ"><label for="c-client">Cliente</label><input id="c-client" maxlength="80" placeholder="Prénom et nom"></div>
+      <div class="champ"><label for="c-tel">Téléphone</label><input id="c-tel" inputmode="tel" maxlength="30" placeholder="77 000 00 00"></div>
+    </div>
+    <div class="champ"><label for="c-date">Date</label><input id="c-date" type="datetime-local"></div>
+    <div class="champ"><label for="c-note">Note</label><textarea id="c-note" rows="3" maxlength="500" placeholder="Adresse de livraison, remarque…"></textarea></div>
+  </form>
+  <footer><button class="b" type="button" data-fermer-cmd>Annuler</button><button class="b principal" type="submit" form="form-cmd" id="c-ok">Enregistrer la vente</button></footer>
 </div>
 
 <div class="confirm" id="confirm" role="alertdialog" aria-modal="true"><div><p id="confirm-txt"></p><div class="actions-ligne"><button class="b" type="button" id="confirm-non">Annuler</button><button class="b principal" type="button" id="confirm-oui">Supprimer</button></div></div></div>

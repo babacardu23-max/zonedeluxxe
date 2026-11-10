@@ -24,7 +24,8 @@ const EMAIL_GERANT="gerant@zonedeluxxe.app";
 
 /* ---------- Outils ---------- */
 const $=id=>document.getElementById(id);
-const WA="221774856093";
+let WA="221774856093";
+const formatTel=n=>{const d=String(n).replace(/\D/g,"").replace(/^221/,""); return d.length===9?d.replace(/(\d{2})(\d{3})(\d{2})(\d{2})/,"$1 $2 $3 $4"):d;};
 const waLink=t=>"https://wa.me/"+WA+"?text="+encodeURIComponent(t);
 const fcfa=n=>Number(n||0).toLocaleString("fr-FR").replace(/[  ]/g," ")+" F";
 const blob=id=>id?"/_blob/"+encodeURIComponent(id):null;
@@ -44,7 +45,22 @@ const vedettes=()=>{const v=visibles().filter(p=>p.vedette&&photoSrc(p)&&p.stock
 
 function appliquerCouleur(c){ if(/^#[0-9a-f]{6}$/i.test(c||"")) document.documentElement.style.setProperty("--rouge",c); }
 function peindreLogo(){ const src=/^https:\/\/[a-z0-9]+\.supabase\.co\//.test(reglages.logoUrl||"")?reglages.logoUrl:"img/logo.jpg"; document.querySelectorAll("[data-logo]").forEach(el=>el.innerHTML=`<img src="${src}" alt="Zonedeluxxe">`); }
-document.querySelectorAll("[data-wa]").forEach(a=>a.href=waLink(a.dataset.wa));
+function majLiensWa(){ document.querySelectorAll("[data-wa]").forEach(a=>a.href=waLink(a.dataset.wa)); document.querySelectorAll("[data-tel]").forEach(e=>e.textContent=formatTel(WA)); }
+majLiensWa();
+
+/* ---------- Textes modifiables ---------- */
+const TXT_DEFAUT={}, TXT_LABEL={};
+document.querySelectorAll("[data-txt]").forEach(el=>{ TXT_DEFAUT[el.dataset.txt]=el.textContent.trim(); TXT_LABEL[el.dataset.txt]=el.dataset.txtLabel||el.dataset.txt; });
+UNIVERS.forEach((u,i)=>{ TXT_DEFAUT["u"+(i+1)+"_n"]=u.n; TXT_LABEL["u"+(i+1)+"_n"]=`Parfums et accessoires : rubrique ${i+1}, nom`; TXT_DEFAUT["u"+(i+1)+"_d"]=u.d; TXT_LABEL["u"+(i+1)+"_d"]=`Parfums et accessoires : rubrique ${i+1}, texte`; });
+TXT_DEFAUT.fiche_note="Livraison immédiate. Indique ta taille et ta couleur dans le message."; TXT_LABEL.fiche_note="Fiche produit : phrase sous le prix";
+const T=k=>{ const t=reglages.textes||{}; if(typeof t[k]==="string"&&t[k].trim()) return t[k].trim(); if(k==="accroche"&&reglages.accroche) return reglages.accroche; return TXT_DEFAUT[k]??""; };
+function appliquerTextes(){
+  document.querySelectorAll("[data-txt]").forEach(el=>{
+    const v=T(el.dataset.txt);
+    if(el.hasAttribute("data-split")){ if(el.getAttribute("aria-label")===v) return; el.textContent=v; delete el.dataset.fait; decouper(el); }
+    else if(el.textContent!==v) el.textContent=v;
+  });
+}
 
 /* ---------- Intro ---------- */
 (function(){
@@ -200,7 +216,7 @@ function rendreGrille(filtre){
         <h3>${esc(p.nom)}</h3>
         <div class="ligne-prix"><span class="prix">${fcfa(p.prix)}</span>${p.prixAvant&&p.prixAvant>p.prix?`<span class="avant">${fcfa(p.prixAvant)}</span>`:""}</div>
         ${p.info?`<p class="info">${esc(p.info)}</p>`:""}
-        ${lienIg(p)?`<a class="lien-ig" href="${esc(lienIg(p))}" target="_blank" rel="noopener" data-ig><svg aria-hidden="true"><use href="#ico-ig"/></svg>Voir la vidéo<span class="sr"> de ${esc(p.nom)} sur Instagram</span></a>`:""}
+        ${lienIg(p)?`<a class="lien-ig" data-pid="${esc(p.id)}" href="${esc(lienIg(p))}" target="_blank" rel="noopener" data-ig><svg aria-hidden="true"><use href="#ico-ig"/></svg>Voir la vidéo<span class="sr"> de ${esc(p.nom)} sur Instagram</span></a>`:""}
       </div>
     </article>`).join("");
   g.querySelectorAll(".produit").forEach((el,i)=>{
@@ -237,23 +253,25 @@ function ouvrirFiche(id){
     <div class="corps"><span class="cat">${esc(p.cat)}</span><h3>${esc(p.nom)}</h3>
       <div class="ligne-prix"><span class="prix">${fcfa(p.prix)}</span>${p.prixAvant&&p.prixAvant>p.prix?`<span class="avant">${fcfa(p.prixAvant)}</span>`:""}</div>
       ${p.info?`<p>${esc(p.info)}</p>`:""}
-      <p>Livraison immédiate. Indique ta taille et ta couleur dans le message.</p>
-      <a class="btn-wa" href="${waLink(epuise?`Bonjour Zonedeluxxe, la pièce ${p.nom} va-t-elle revenir ?`:`Bonjour Zonedeluxxe, je voudrais commander : ${p.nom} (${fcfa(p.prix)}). Ma taille et ma couleur : `)}"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-wa"/></svg>${epuise?"Demander le retour":"Commander sur WhatsApp"}</a>
-      ${lienIg(p)?`<a class="btn-ig" href="${esc(lienIg(p))}" target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#ico-ig"/></svg>Voir la vidéo sur Instagram</a>`:""}
+      <p>${esc(T("fiche_note"))}</p>
+      <a class="btn-wa" data-pid="${esc(p.id)}" href="${waLink(epuise?`Bonjour Zonedeluxxe, la pièce ${p.nom} va-t-elle revenir ?`:`Bonjour Zonedeluxxe, je voudrais commander : ${p.nom} (${fcfa(p.prix)}). Ma taille et ma couleur : `)}"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ico-wa"/></svg>${epuise?"Demander le retour":"Commander sur WhatsApp"}</a>
+      ${lienIg(p)?`<a class="btn-ig" data-pid="${esc(p.id)}" href="${esc(lienIg(p))}" target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#ico-ig"/></svg>Voir la vidéo sur Instagram</a>`:""}
     </div></div>`;
   d.querySelector(".fermer").onclick=()=>d.close();
   d.showModal();
+  suivre("vue",p.id);
 }
 $("fiche").addEventListener("click",e=>{ if(e.target.id==="fiche") e.target.close(); });
 $("fiche").addEventListener("close",e=>e.target.innerHTML="");
 
 /* ---------- Univers ---------- */
-$("univers-liste").innerHTML=UNIVERS.map(u=>`<a href="${waLink(`Bonjour Zonedeluxxe, je voudrais voir vos ${u.n.toLowerCase()} disponibles et leurs prix.`)}"><b>${u.n}</b><span>${u.d}</span><em>Demander la sélection</em></a>`).join("");
+function rendreUnivers(){ $("univers-liste").innerHTML=UNIVERS.map((u,i)=>{ const n=T("u"+(i+1)+"_n"), d=T("u"+(i+1)+"_d"); return n?`<a href="${waLink(`Bonjour Zonedeluxxe, je voudrais voir vos ${n.toLowerCase()} disponibles et leurs prix.`)}"><b>${esc(n)}</b><span>${esc(d)}</span><em>Demander la sélection</em></a>`:""; }).join(""); }
 
 function toutRendre(){
   appliquerCouleur(reglages.couleur); peindreLogo();
-  if(reglages.accroche) $("accroche").textContent=reglages.accroche;
-  rendreAnneau(); rendreBande(); rendreDefile(); rendreFiltres(); rendreGrille(false);
+  if(/^\d{8,15}$/.test(reglages.whatsapp||"")) WA=reglages.whatsapp;
+  appliquerTextes(); majLiensWa(); rendreUnivers();
+  rendreAnneau(); rendreBande(); rendreDefile(); rendreFiltres(); rendreGrille(false); rendreLookbook();
   if(document.body.classList.contains("mode-gerant")) rendreGerant();
 }
 toutRendre();
@@ -273,7 +291,7 @@ async function ouvrirGerant(){
   if(!peutEnregistrer){ fermerGerant(); ouvrirMdp(); return; }
   document.body.classList.add("mode-gerant");
   if(location.hash!=="#gerant") history.replaceState(null,"","#gerant");
-  rendreGerant();
+  rendreGerant(); montrerVue(vueActive);
 }
 function fermerGerant(){ document.body.classList.remove("mode-gerant"); if(location.hash==="#gerant") history.replaceState(null,"",location.pathname+location.search); }
 function ouvrirMdp(){ $("mdp-err").textContent=""; $("mdp-champ").value=""; $("mdp").showModal(); setTimeout(()=>$("mdp-champ").focus(),50); }
@@ -303,10 +321,15 @@ addEventListener("hashchange",routeur);
 function confirmer(texte){return new Promise(res=>{$("confirm-txt").textContent=texte;$("confirm").classList.add("vu");$("confirm-oui").focus();
   const fin=v=>{$("confirm").classList.remove("vu");$("confirm-oui").onclick=$("confirm-non").onclick=null;res(v);};
   $("confirm-oui").onclick=()=>fin(true);$("confirm-non").onclick=()=>fin(false);});}
-document.querySelectorAll(".g-side [data-vue]").forEach(b=>b.addEventListener("click",()=>{
-  document.querySelectorAll(".g-side [data-vue]").forEach(x=>x.setAttribute("aria-current",x===b));
-  $("vue-produits").hidden=b.dataset.vue!=="produits"; $("vue-apparence").hidden=b.dataset.vue!=="apparence";
-}));
+let vueActive="bord";
+function montrerVue(v){
+  vueActive=v;
+  document.querySelectorAll(".g-side [data-vue]").forEach(x=>x.setAttribute("aria-current",x.dataset.vue===v));
+  document.querySelectorAll("[data-vue-panneau]").forEach(p=>p.hidden=p.dataset.vuePanneau!==v);
+  if(v==="bord") chargerBord(); if(v==="commandes") chargerCommandes(); if(v==="textes") rendreTextes();
+  $("gerant").scrollTop=0;
+}
+document.querySelectorAll(".g-side [data-vue]").forEach(b=>b.addEventListener("click",()=>montrerVue(b.dataset.vue)));
 async function verifierSession(){
   peutEnregistrer=await estAdmin(); $("g-alerte").hidden=peutEnregistrer;
   if(!peutEnregistrer) toast("Ta session a expiré. Reconnecte-toi avec le cœur.");
@@ -329,7 +352,7 @@ function rendreGerant(){
   sel.innerHTML=`<option value="">Toutes les catégories</option>`+cats.map(c=>`<option ${c===cur?"selected":""}>${esc(c)}</option>`).join("");
   $("liste-cats").innerHTML=cats.map(c=>`<option value="${esc(c)}">`).join("");
   $("f-couleur").value=reglages.couleur||"#B5566D";
-  $("f-accroche").value=reglages.accroche||$("accroche").textContent;
+  $("f-wa").value=WA;
   const q=$("g-cherche").value.trim().toLowerCase(), c=sel.value;
   const liste=tous.filter(p=>(!c||p.cat===c)&&(!q||p.nom.toLowerCase().includes(q)));
   let html="";
@@ -435,7 +458,186 @@ function couleurDominante(url){
 $("f-logo").onchange=async e=>{ const f=e.target.files[0]; e.target.value=""; if(!f) return; const couleur=await couleurDominante(URL.createObjectURL(f)); const url=await envoyerImage(f,$("depot-logo")); if(!url) return; await enregistrerReglages(couleur?{logoUrl:url,couleur}:{logoUrl:url}, couleur?`Logo enregistré. Couleur ${couleur} appliquée au site.`:"Logo enregistré."); };
 $("couleur-ok").onclick=()=>enregistrerReglages({couleur:$("f-couleur").value},"Couleur appliquée.");
 $("f-couleur").oninput=e=>appliquerCouleur(e.target.value);
-$("accroche-ok").onclick=()=>enregistrerReglages({accroche:$("f-accroche").value.trim().slice(0,400)},"Texte enregistré.");
+$("wa-ok").onclick=()=>{ const n=$("f-wa").value.replace(/\D/g,""); const num=n.length===9?"221"+n:n; if(!/^\d{11,15}$/.test(num)){ toast("Numéro invalide : écris par exemple 221774856093."); return; } enregistrerReglages({whatsapp:num},"Numéro WhatsApp enregistré."); };
+
+/* ---------- Mesure d'audience (anonyme, sans données personnelles) ---------- */
+function suivre(type,pid){
+  if(peutEnregistrer||document.body.classList.contains("mode-gerant")) return;
+  try{ fetch(SUPABASE_URL+"/rest/v1/evenements",{method:"POST",keepalive:true,headers:{"apikey":SUPABASE_CLE,"Content-Type":"application/json","Prefer":"return=minimal"},body:JSON.stringify({type,produit_id:pid?String(pid).slice(0,24):null})}).catch(()=>{}); }catch(_){}
+}
+document.addEventListener("click",e=>{
+  const a=e.target.closest("a[href]"); if(!a) return;
+  if(a.href.startsWith("https://wa.me/")) suivre("commande",a.dataset.pid||null);
+  else if(/instagram\.com\/p\//.test(a.href)) suivre("instagram",a.dataset.pid||null);
+},true);
+
+/* ---------- Effets : progression, boutons magnétiques, parallaxe, lookbook ---------- */
+addEventListener("scroll",()=>{ const h=document.documentElement; $("barre-progres").style.transform=`scaleX(${h.scrollTop/Math.max(1,h.scrollHeight-innerHeight)})`; },{passive:true});
+if(FIN&&!REDUIT){
+  document.addEventListener("pointermove",e=>{
+    const b=e.target.closest(".btn-wa,.lien-sec,.etiq-hero button,.filtres button");
+    document.querySelectorAll(".magnet").forEach(m=>{ if(m!==b){ m.style.transform=""; m.classList.remove("magnet"); } });
+    if(!b||b.closest("#gerant")) return;
+    const r=b.getBoundingClientRect(); b.classList.add("magnet");
+    b.style.transform=`translate(${(e.clientX-r.left-r.width/2)*.25}px,${(e.clientY-r.top-r.height/2)*.35}px)`;
+  },{passive:true});
+  const scene=$("scene3d"), h1=document.querySelector(".hero h1");
+  document.querySelector(".hero").addEventListener("pointermove",e=>{
+    const x=e.clientX/innerWidth-.5, y=e.clientY/innerHeight-.5;
+    if(!anneau.tire) scene.style.transform=`rotateY(${x*8}deg) rotateX(${-y*6}deg)`;
+    h1.style.transform=`translate(${x*-14}px,${y*-10}px)`;
+  });
+  document.querySelector(".hero").addEventListener("pointerleave",()=>{ scene.style.transform=""; h1.style.transform=""; });
+  h1.style.transition="transform .8s cubic-bezier(.2,.7,.1,1)";
+}
+function rendreLookbook(){
+  const v=visibles().filter(p=>photoSrc(p)); if(!v.length) return;
+  const carte=p=>`<a href="#catalogue" data-id="${esc(p.id)}" data-prix="${esc(p.nom)} · ${fcfa(p.prix)}" aria-label="${esc(p.nom)}"><img src="${esc(photoSrc(p))}" alt="" loading="lazy"></a>`;
+  const moitie=Math.ceil(v.length/2), a=v.slice(0,moitie), b=v.slice(moitie).concat(v.slice(0,Math.max(0,moitie-(v.length-moitie))));
+  $("lb-1").innerHTML=[...a,...a].map(carte).join(""); $("lb-2").innerHTML=[...b,...b].map(carte).join("");
+}
+document.getElementById("lookbook").addEventListener("click",e=>{ const a=e.target.closest("a[data-id]"); if(a){ e.preventDefault(); ouvrirFiche(a.dataset.id); } });
+(function lookbookBoucle(){
+  var pos=0, dernier=scrollY;
+  (function f(){
+    const dy=scrollY-dernier; dernier=scrollY;
+    if(!REDUIT) pos+=.35+Math.min(Math.abs(dy)*.25,14);
+    const r1=$("lb-1"), r2=$("lb-2");
+    if(r1&&r1.scrollWidth){ const w1=r1.scrollWidth/2, w2=r2.scrollWidth/2;
+      r1.style.transform=`translateX(${-(pos%w1)}px)`; r2.style.transform=`translateX(${(pos%w2)-w2}px)`; }
+    requestAnimationFrame(f);
+  })();
+})();
+
+/* =================== TABLEAU DE BORD =================== */
+let joursBord=30;
+document.querySelectorAll(".periode [data-jours]").forEach(b=>b.addEventListener("click",()=>{
+  joursBord=Number(b.dataset.jours);
+  document.querySelectorAll(".periode [data-jours]").forEach(x=>x.setAttribute("aria-pressed",x===b));
+  chargerBord();
+}));
+const nomProduit=id=>{ const p=produits.find(x=>x.id===id); return p?p.nom:"Pièce retirée"; };
+function kpiHTML(val,lib,sous){ return `<div class="kpi"><b>${val}</b><span>${lib}</span>${sous?`<small>${sous}</small>`:""}</div>`; }
+function barres(jours,series,format){
+  const n=jours.length; if(!n) return `<p class="vide-g">Pas encore de données.</p>`;
+  const max=Math.max(1,...jours.map(j=>Math.max(...series.map(s=>j[s.cle]||0))));
+  const W=600,H=170,pad=22,bw=(W-pad)/n, g=series.length;
+  let out=`<svg viewBox="0 0 ${W} ${H+22}" role="img" aria-label="Graphique sur ${n} jours"><line x1="${pad}" y1="${H}" x2="${W}" y2="${H}" stroke="#EEE4E5"/><text x="0" y="12" font-size="11" fill="#6E6164">${format(max)}</text>`;
+  jours.forEach((j,i)=>{ series.forEach((s,k)=>{ const v=j[s.cle]||0, h=Math.round(v/max*(H-20)), w=Math.max(1,(bw*.78)/g), x=pad+i*bw+bw*.11+k*w;
+      out+=`<rect x="${x.toFixed(1)}" y="${H-h}" width="${w.toFixed(1)}" height="${h}" rx="${Math.min(3,w/2)}" fill="${s.couleur}"><title>${j.jour} · ${s.nom} : ${format(v)}</title></rect>`; });
+    if(i===0||i===n-1||(n<=14)||(i%Math.ceil(n/6)===0)){ const d=j.jour.slice(8,10)+"/"+j.jour.slice(5,7); out+=`<text x="${(pad+i*bw+bw/2).toFixed(1)}" y="${H+16}" font-size="10" text-anchor="middle" fill="#6E6164">${d}</text>`; } });
+  return out+"</svg>";
+}
+async function chargerBord(){
+  if(!sb||!peutEnregistrer) return;
+  $("bord-kpis").innerHTML=kpiHTML("…","Chargement");
+  const [st,dem]=await Promise.all([
+    sb.rpc("stats_boutique",{jours:joursBord}),
+    sb.from("evenements").select("id,produit_id,created_at").eq("type","commande").order("created_at",{ascending:false}).limit(15)
+  ]);
+  if(st.error){ $("bord-kpis").innerHTML=kpiHTML("—","Statistiques indisponibles","Reconnecte-toi puis réessaie"); return; }
+  const d=st.data, conv=d.visites?Math.round(d.demandes/d.visites*1000)/10:0, panier=d.ventes?Math.round(d.ca/d.ventes):0;
+  $("bord-kpis").innerHTML=kpiHTML(d.visites,"visites",`sur ${d.jours} jours`)+kpiHTML(d.vues,"pièces consultées")+kpiHTML(d.demandes,"demandes WhatsApp",`${conv} % des visites`)+kpiHTML(d.ventes,"ventes confirmées")+kpiHTML(fcfa(d.ca),"chiffre d'affaires")+kpiHTML(fcfa(panier),"panier moyen");
+  const rose=getComputedStyle(document.documentElement).getPropertyValue("--rouge").trim()||"#B5566D";
+  $("graph-trafic").innerHTML=barres(d.par_jour,[{cle:"visites",nom:"Visites",couleur:"color-mix(in srgb,"+rose+" 28%,#fff)"},{cle:"demandes",nom:"Demandes",couleur:rose}],v=>String(v));
+  $("graph-ca").innerHTML=d.ca?barres(d.par_jour,[{cle:"ca",nom:"Chiffre d'affaires",couleur:rose}],v=>fcfa(v)):`<p class="vide-g">Aucune vente enregistrée sur la période. Ajoute-les dans « Commandes et ventes ».</p>`;
+  $("bord-top").innerHTML=d.top.length?`<ul class="liste-g">${d.top.map(t=>{ const p=produits.find(x=>x.id===t.produit_id), ps=p&&photoSrc(p);
+      return `<li><span class="mini">${ps?`<img src="${esc(ps)}" alt="">`:""}</span><span class="nm">${esc(nomProduit(t.produit_id))}<small>${t.vues} vue${t.vues>1?"s":""}</small></span><span class="chiffre">${t.demandes} demande${t.demandes>1?"s":""}</span></li>`; }).join("")}</ul>`:`<p class="vide-l">Les pièces les plus regardées et demandées apparaîtront ici dès les premières visites.</p>`;
+  const liste=dem.data||[];
+  $("bord-demandes").innerHTML=liste.length?`<ul class="liste-g">${liste.map(x=>{ const quand=new Date(x.created_at).toLocaleString("fr-FR",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"});
+      return `<li><span class="nm">${x.produit_id?esc(nomProduit(x.produit_id)):"Demande générale"}<small>${quand}</small></span><button class="b" type="button" data-vendre="${esc(x.produit_id||"")}">Confirmer la vente</button></li>`; }).join("")}</ul>`:`<p class="vide-l">Aucune demande pour le moment. Chaque clic sur « Commander » apparaîtra ici.</p>`;
+}
+$("bord-demandes").addEventListener("click",e=>{ const b=e.target.closest("[data-vendre]"); if(b) ouvrirCommande(null,b.dataset.vendre); });
+$("bord-top").addEventListener("click",()=>{});
+
+/* =================== COMMANDES =================== */
+let commandes=[];
+const STATUTS={nouvelle:"À traiter",confirmee:"Confirmée",livree:"Livrée",annulee:"Annulée"};
+async function chargerCommandes(){
+  if(!sb||!peutEnregistrer) return;
+  const { data, error } = await sb.from("commandes").select("*").order("date_commande",{ascending:false}).limit(500);
+  if(error){ $("cmd-table").innerHTML=`<p class="vide-l">Impossible de charger les commandes. Reconnecte-toi puis réessaie.</p>`; return; }
+  commandes=data||[]; rendreCommandes();
+}
+function rendreCommandes(){
+  const debutMois=new Date(); debutMois.setDate(1); debutMois.setHours(0,0,0,0);
+  const valides=commandes.filter(c=>c.statut==="confirmee"||c.statut==="livree");
+  const duMois=valides.filter(c=>new Date(c.date_commande)>=debutMois);
+  $("cmd-kpis").innerHTML=kpiHTML(fcfa(duMois.reduce((a,c)=>a+c.montant,0)),"chiffre d'affaires du mois")+kpiHTML(duMois.length,"ventes ce mois-ci")+kpiHTML(commandes.filter(c=>c.statut==="nouvelle"||c.statut==="confirmee").length,"à livrer ou à traiter")+kpiHTML(fcfa(valides.reduce((a,c)=>a+c.montant,0)),"total depuis le début");
+  const q=$("cmd-cherche").value.trim().toLowerCase(), st=$("cmd-statut").value;
+  const liste=commandes.filter(c=>(!st||c.statut===st)&&(!q||(c.client+" "+c.articles+" "+c.telephone+" "+c.note).toLowerCase().includes(q)));
+  if(!liste.length){ $("cmd-table").innerHTML=`<p class="vide-l">${commandes.length?"Aucune commande ne correspond.":"Aucune vente enregistrée. Clique sur « Nouvelle vente » après chaque commande conclue sur WhatsApp."}</p>`; return; }
+  $("cmd-table").innerHTML=`<table><thead><tr><th>Date</th><th>Cliente</th><th>Articles</th><th>Montant</th><th>Statut</th><th><span class="sr">Actions</span></th></tr></thead><tbody>${liste.map(c=>`<tr>
+    <td>${new Date(c.date_commande).toLocaleDateString("fr-FR",{day:"2-digit",month:"short",year:"numeric"})}</td>
+    <td class="nm">${esc(c.client||"—")}<small>${esc(c.telephone||"")}</small></td>
+    <td>${esc(c.articles||"—")}</td><td><b>${fcfa(c.montant)}</b></td>
+    <td><label class="sr" for="st-${c.id}">Statut</label><select class="statut-sel" id="st-${c.id}" data-statut="${c.id}">${Object.entries(STATUTS).map(([k,v])=>`<option value="${k}" ${k===c.statut?"selected":""}>${v}</option>`).join("")}</select></td>
+    <td><div class="actions-ligne"><button class="b" type="button" data-cmd-edit="${c.id}">Modifier</button><button class="b danger" type="button" data-cmd-del="${c.id}">Supprimer</button></div></td></tr>`).join("")}</tbody></table>`;
+}
+$("cmd-cherche").addEventListener("input",rendreCommandes);
+$("cmd-statut").addEventListener("change",rendreCommandes);
+$("cmd-table").addEventListener("change",async e=>{
+  const s=e.target.closest("[data-statut]"); if(!s) return;
+  if(!await verifierSession()) return;
+  const { error } = await sb.from("commandes").update({statut:s.value}).eq("id",s.dataset.statut);
+  if(error) echec(error); else { toast(`Commande : ${STATUTS[s.value]}.`); chargerCommandes(); }
+});
+$("cmd-table").addEventListener("click",async e=>{
+  const ed=e.target.closest("[data-cmd-edit]"), de=e.target.closest("[data-cmd-del]");
+  if(ed) ouvrirCommande(ed.dataset.cmdEdit);
+  if(de&&await confirmer("Supprimer cette commande du registre ? Cette action est définitive.")){
+    if(!await verifierSession()) return;
+    const { error } = await sb.from("commandes").delete().eq("id",de.dataset.cmdDel);
+    if(error) echec(error); else { toast("Commande supprimée."); chargerCommandes(); }
+  }
+});
+let cmdEdition=null;
+const versLocal=d=>{ const x=new Date(d); x.setMinutes(x.getMinutes()-x.getTimezoneOffset()); return x.toISOString().slice(0,16); };
+function ouvrirCommande(id,pid){
+  cmdEdition=id||null;
+  const c=id?commandes.find(x=>x.id===id):{client:"",telephone:"",articles:"",montant:"",statut:"confirmee",note:"",produit_id:pid||"",date_commande:new Date().toISOString()};
+  $("c-titre").textContent=id?"Modifier la vente":"Nouvelle vente";
+  $("c-produit").innerHTML=`<option value="">Autre / plusieurs pièces</option>`+produits.slice().sort((a,b)=>a.nom.localeCompare(b.nom,"fr")).map(p=>`<option value="${esc(p.id)}">${esc(p.nom)} · ${fcfa(p.prix)}</option>`).join("");
+  $("c-produit").value=c.produit_id||"";
+  const p=produits.find(x=>x.id===c.produit_id);
+  $("c-articles").value=c.articles||(p?p.nom:""); $("c-montant").value=c.montant||(p?p.prix:"");
+  $("c-statut").value=c.statut; $("c-client").value=c.client; $("c-tel").value=c.telephone; $("c-note").value=c.note; $("c-date").value=versLocal(c.date_commande);
+  $("tiroir-cmd").classList.add("ouvert"); setTimeout(()=>$("c-produit").focus(),300);
+}
+$("c-produit").addEventListener("change",()=>{ const p=produits.find(x=>x.id===$("c-produit").value); if(p){ $("c-articles").value=p.nom; $("c-montant").value=p.prix; } });
+document.querySelectorAll("[data-fermer-cmd]").forEach(b=>b.onclick=()=>$("tiroir-cmd").classList.remove("ouvert"));
+$("cmd-nouvelle").onclick=()=>ouvrirCommande();
+$("form-cmd").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const montant=Number($("c-montant").value);
+  if(!(montant>=0)||$("c-montant").value===""){ toast("Indique le montant de la vente."); return; }
+  if(!await verifierSession()) return;
+  const data={client:$("c-client").value.trim().slice(0,80),telephone:$("c-tel").value.trim().slice(0,30),articles:$("c-articles").value.trim().slice(0,500),produit_id:$("c-produit").value||null,montant:Math.round(montant),statut:$("c-statut").value,note:$("c-note").value.trim().slice(0,500),date_commande:$("c-date").value?new Date($("c-date").value).toISOString():new Date().toISOString()};
+  const b=$("c-ok"); b.disabled=true;
+  const { error } = cmdEdition? await sb.from("commandes").update(data).eq("id",cmdEdition) : await sb.from("commandes").insert(data);
+  b.disabled=false;
+  if(error){ echec(error); return; }
+  $("tiroir-cmd").classList.remove("ouvert"); toast(cmdEdition?"Vente modifiée.":"Vente enregistrée.");
+  await chargerCommandes(); if(vueActive==="bord") chargerBord();
+});
+$("cmd-export").onclick=()=>{
+  if(!commandes.length){ toast("Aucune commande à exporter."); return; }
+  const c=v=>`"${String(v??"").replace(/"/g,'""')}"`;
+  const lignes=[["Date","Cliente","Téléphone","Articles","Montant (F CFA)","Statut","Note"].map(c).join(";")].concat(commandes.map(x=>[new Date(x.date_commande).toLocaleString("fr-FR"),x.client,x.telephone,x.articles,x.montant,STATUTS[x.statut],x.note].map(c).join(";")));
+  const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob(["﻿"+lignes.join("\n")],{type:"text/csv;charset=utf-8"})); a.download=`zonedeluxxe-commandes-${new Date().toISOString().slice(0,10)}.csv`; document.body.appendChild(a); a.click(); a.remove();
+};
+
+/* =================== TEXTES DU SITE =================== */
+function rendreTextes(){
+  const t=reglages.textes||{};
+  $("txt-form").innerHTML=Object.keys(TXT_DEFAUT).map(k=>{ const v=typeof t[k]==="string"?t[k]:(k==="accroche"&&reglages.accroche?reglages.accroche:""); const long=TXT_DEFAUT[k].length>60;
+    return `<div class="champ${v?" modifie":""}"><label for="tx-${k}">${esc(TXT_LABEL[k])}</label><textarea id="tx-${k}" data-cle="${k}" rows="${long?3:1}" maxlength="400" placeholder="${esc(TXT_DEFAUT[k])}">${esc(v)}</textarea></div>`; }).join("");
+}
+$("txt-ok").onclick=async()=>{
+  const textes={}; $("txt-form").querySelectorAll("[data-cle]").forEach(el=>{ const v=el.value.trim(); if(v&&v!==TXT_DEFAUT[el.dataset.cle]) textes[el.dataset.cle]=v.slice(0,400); });
+  await enregistrerReglages({textes,accroche:null},"Textes enregistrés. Ils sont en ligne."); rendreTextes();
+};
+$("txt-retablir").onclick=async()=>{ if(await confirmer("Remettre tous les textes d'origine ?")){ await enregistrerReglages({textes:{},accroche:null},"Textes d'origine rétablis."); rendreTextes(); } };
 
 /* ---------- Données depuis Supabase ---------- */
 async function chargerDonnees(){
@@ -455,4 +657,5 @@ async function chargerDonnees(){
     try{ await chargerDonnees(); }catch(_){}
   }
   routeur();
+  try{ if(!sessionStorage.getItem("zdl-v")){ sessionStorage.setItem("zdl-v","1"); setTimeout(()=>suivre("visite"),1500); } }catch(_){}
 })();
