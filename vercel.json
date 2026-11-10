@@ -47,15 +47,15 @@
   "rewrites": [
     {
       "source": "/img/:path*",
-      "destination": "https://cdn.jsdelivr.net/gh/babacardu23-max/zonedeluxxe@99a219884de59ffae3ee6051910b8196a119401f/img/:path*"
+      "destination": "https://cdn.jsdelivr.net/gh/babacardu23-max/zonedeluxxe@e20486993c1f5a4476f89f34bc3503f57ec0e165/img/:path*"
     },
     {
       "source": "/js/:path*",
-      "destination": "https://cdn.jsdelivr.net/gh/babacardu23-max/zonedeluxxe@99a219884de59ffae3ee6051910b8196a119401f/js/:path*"
+      "destination": "https://cdn.jsdelivr.net/gh/babacardu23-max/zonedeluxxe@e20486993c1f5a4476f89f34bc3503f57ec0e165/js/:path*"
     },
     {
       "source": "/css/:path*",
-      "destination": "https://cdn.jsdelivr.net/gh/babacardu23-max/zonedeluxxe@99a219884de59ffae3ee6051910b8196a119401f/css/:path*"
+      "destination": "https://cdn.jsdelivr.net/gh/babacardu23-max/zonedeluxxe@e20486993c1f5a4476f89f34bc3503f57ec0e165/css/:path*"
     }
   ]
 }
